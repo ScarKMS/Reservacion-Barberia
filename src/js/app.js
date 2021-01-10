@@ -1,9 +1,50 @@
+let pagina = 1;
+
 document.addEventListener('DOMContentLoaded', function() {
     iniciarAPP();
 });
 
 function iniciarAPP() {
     mostrarServicios();
+
+    //Resalta div actual segun el tap al que se preciona
+    mostrarSeccion();
+
+    //Oculta o Muestra la seccion segun el tab al que se preciona
+    cambiarSeccion();
+}
+
+function mostrarSeccion() {
+    const seccionActual = document.querySelector(`#paso-${pagina}`);
+    seccionActual.classList.add('mostrar-seccion');
+
+    //Resalta el tab actual
+    const tab = document.querySelector(`[data-paso="${pagina}"]`);
+    tab.classList.add('actual');
+}
+
+function cambiarSeccion() {
+    const enlaces = document.querySelectorAll('.tabs button');
+    enlaces.forEach(enlace => {
+        enlace.addEventListener('click', e => {
+            e.preventDefault();
+            pagina = parseInt(e.target.dataset.paso);
+
+            //Eliminar mostrar-seccion de la seccion anterior
+            document.querySelector('.mostrar-seccion').classList.remove('mostrar-seccion');
+
+            //Agregar mostrar-seccion al elemento seleccionado
+            const seccion = document.querySelector(`#paso-${pagina}`);
+            seccion.classList.add('mostrar-seccion');
+
+            //Eliminar la clase de actual en el tab anterior
+            document.querySelector('.tabs .actual').classList.remove('actual');
+
+            //agregar la clase en el nuevo tab
+            const tab = document.querySelector(`[data-paso="${pagina}"]`);
+            tab.classList.add('actual');
+        });
+    });
 }
 
 async function mostrarServicios() {
