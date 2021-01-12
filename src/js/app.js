@@ -37,6 +37,27 @@ function iniciarAPP() {
 
     //desahabilita dias pasados
     deshabilitarFechaAnterior();
+
+    //almacena la hora de la cita en el objeto
+    horaCita();
+}
+
+function horaCita() {
+    const inputHora = document.querySelector('#hora');
+    inputHora.addEventListener('input', e => {
+        const horaCita = e.target.value;
+        const hora = horaCita.split(':');
+
+        if (hora[0] < 10 || hora[0] > 18) {
+            mostrarAlerta('Hora no valida', 'error');
+            setTimeout(() => {
+                inputHora.value = '';
+            }, 3000);
+        } else {
+            cita.hora = horaCita;
+
+        }
+    });
 }
 
 function deshabilitarFechaAnterior() {
@@ -120,6 +141,11 @@ function mostrarResumen() {
     const resumenDiv = document.querySelector('.contenido-resumen');
 
 
+    //Limpia el HTML Previo
+    while (resumenDiv.firstChild) {
+        resumenDiv.removeChild(resumenDiv.firstChild);
+    }
+
     if (Object.values(cita).includes('')) {
         const noServicios = document.createElement('P');
         noServicios.textContent = 'faltan datos de Servicio, hora, fecha o nombre'
@@ -128,7 +154,21 @@ function mostrarResumen() {
 
         //agregar a resumenDiv
         resumenDiv.appendChild(noServicios);
+        return;
     }
+
+    const nombreCita = document.createElement('P');
+    nombreCita.innerHTML = `<span>Nombre:</span> ${nombre}`;
+
+    const fechaCita = document.createElement('P');
+    fechaCita.innerHTML = `<span>Fecha:</span> ${fecha}`;
+
+    const horaCita = document.createElement('P');
+    horaCita.innerHTML = `<span>Fecha:</span> ${hora}`;
+
+    resumenDiv.appendChild(nombreCita);
+    resumenDiv.appendChild(fechaCita);
+    resumenDiv.appendChild(horaCita);
 
     //Validacion de Objeto
 }
@@ -142,6 +182,8 @@ function botonesPaginador() {
     } else if (pagina === 3) {
         paginaSiguiente.classList.add('ocultar');
         paginaAnterior.classList.remove('ocultar');
+
+        mostrarResumen();
     } else {
         paginaAnterior.classList.remove('ocultar');
         paginaSiguiente.classList.remove('ocultar');
