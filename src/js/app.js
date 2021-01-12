@@ -1,4 +1,10 @@
 let pagina = 1;
+const cita = {
+    nombre: '',
+    fecha: '',
+    hora: '',
+    servicios: []
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     iniciarAPP();
@@ -19,6 +25,112 @@ function iniciarAPP() {
 
     //comprueba la pagina actual para ocultar o mostrar la paginacion
     botonesPaginador();
+
+    //Muestra el resumen de la cita o mensaje de error en caso de no pasar la validadicon
+    mostrarResumen();
+
+    //Almacena el nombre de la cita en el objeto
+    nombreCita();
+
+    //almacena la fecha de la cita en el objeto
+    fechaCita();
+
+    //desahabilita dias pasados
+    deshabilitarFechaAnterior();
+}
+
+function deshabilitarFechaAnterior() {
+    const inputFecha = document.querySelector('#fecha');
+    const fechaAhora = new Date();
+    const year = fechaAhora.getFullYear();
+    const mes = fechaAhora.getMonth() + 1;
+    const dia = fechaAhora.getDate() + 1;
+
+    //Formato deseado: AAAA-MM-DD   
+    const fechaDeshabilitar = `${year}-${mes}-${dia}`;
+
+    inputFecha.min = fechaDeshabilitar;
+
+}
+
+function fechaCita() {
+    const fechaInput = document.querySelector('#fecha');
+    fechaInput.addEventListener('input', e => {
+        const dia = new Date(e.target.value).getUTCDate();
+        if ([0, 6].includes(dia)) {
+            e.preventDefault();
+            fechaInput.value = '';
+            mostrarAlerta('Fines de semana no validos', 'error');
+        } else {
+            cita.fecha = fechaInput.value;
+        }
+    });
+}
+
+function mostrarAlerta(mensaje, tipo) {
+
+    //Si hay una alerta entonces no crear otra
+    const alertaPrevia = document.querySelector('alerta');
+    if (alertaPrevia) {
+        return;
+    }
+
+    const alerta = document.createElement('DIV');
+    alerta.textContent = mensaje;
+    alerta.classList.add('alerta');
+
+    if (tipo == 'error') {
+        alerta.classList.add('error');
+    }
+
+    //Insertar en el HTML
+    const formulario = document.querySelector('.formulario');
+    formulario.appendChild(alerta);
+
+    //eliminar la alerta despues de 3 segundos
+    setTimeout(() => {
+        alerta.remove();
+    }, 3000);
+}
+
+function nombreCita() {
+    const nombreInput = document.querySelector('#nombre');
+    nombreInput.addEventListener('input', e => {
+        const nombreTexto = e.target.value.trim();
+
+        //validacion que nombreTexto debe tener algo
+        if (nombreTexto == '' || nombreTexto.length < 3) {
+            mostrarAlerta('Nombre no Valido', 'error');
+        } else {
+            const alerta = document.querySelector('.alerta');
+            if (alerta) {
+                alerta.remove();
+            }
+            cita.nombre = nombreTexto;
+        }
+
+    });
+}
+
+function mostrarResumen() {
+    // Destructuring
+    const { nombre, fecha, hora, servicios } = cita;
+
+    //Seleccionar el resumen
+    const resumenDiv = document.querySelector('.contenido-resumen');
+
+
+    if (Object.values(cita).includes('')) {
+        const noServicios = document.createElement('P');
+        noServicios.textContent = 'faltan datos de Servicio, hora, fecha o nombre'
+
+        noServicios.classList.add('invalidar-cita');
+
+        //agregar a resumenDiv
+        resumenDiv.appendChild(noServicios);
+    }
+
+    //Validacion de Objeto
 }
 
 function botonesPaginador() {
@@ -146,8 +258,30 @@ function seleccionarServicio(e) {
 
     if (elemento.classList.contains('seleccionado')) {
         elemento.classList.remove('seleccionado');
+
+        const id = parseInt(elemento.dataset.idServicio);
+
+        eliminarServicio(id);
     } else {
         elemento.classList.add('seleccionado');
+
+        const servicioObj = {
+            id: parseInt(elemento.dataset.idServicio),
+            nombre: elemento.firstElementChild.textContent,
+            precio: elemento.firstElementChild.nextElementSibling.textContent
+        }
+
+        agregarServicio(servicioObj);
     }
 
+}
+
+function eliminarServicio(id) {
+    const { servicios } = cita;
+    cita.servicios = servicios.filter(servicio => servicio.id !== id);
+}
+
+function agregarServicio(servicioObj) {
+    const { servicios } = cita;
+    cita.servicios = [...servicios, servicioObj];
 }
