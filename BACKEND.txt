@@ -1,3 +1,2 @@
-+Creada tabla de Servicios
-+Creada tabla de Reservaciones
--No tiene las reglas de normalizacion
++CREADA TABLA DE CITAS
++CREADA RELACION DE TABLAS CITASSERVICIOS
