@@ -1,0 +1,3 @@
++Creada tabla de Servicios
++Creada tabla de Reservaciones
+-No tiene las reglas de normalizacion
