@@ -1,2 +1,2 @@
 # Reservacion-Barberia
- Proyecto para reservar sita en una barberia
+ Proyecto para reservar cita en una barberia
